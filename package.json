@@ -20,9 +20,10 @@
     "express-session": "^1.18.1",
     "express-validator": "^7.2.1",
     "prisma": "^6.7.0",
-    "sqlite3": "^5.1.7"
-  },
-  "devDependencies": {
-    "nodemon": "^3.1.10"
+    "sqlite3": "^5.1.7",
+    "autoprefixer": "^10.4.21",
+    "nodemon": "^3.1.10",
+    "postcss": "^8.5.3",
+    "tailwindcss": "^4.1.6"
   }
 }
