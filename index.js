@@ -23,6 +23,8 @@ app.use((req, res, next) => {
     next();
 });
 
+app.use(express.static(path.join(__dirname + "pulic")));
+
 
 app.set("views", path.join(__dirname, "views"))
 app.set("view engine", "ejs");
@@ -37,7 +39,7 @@ app.get("/", async (req, res, next) => {
             orderBy: {createdAt: "desc"}
         });
         res.render("index", {
-            post,
+            posts,
             success: req.flash("success"),
             error: req.flash("error")
         })
