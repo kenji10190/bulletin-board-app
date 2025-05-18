@@ -23,15 +23,12 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use(express.static(path.join(__dirname + "pulic")));
+app.use(express.static(path.join(__dirname, "public")));
 
 
 app.set("views", path.join(__dirname, "views"))
 app.set("view engine", "ejs");
 
-app.use((error, req, res, next) => {
-    res.status(500).render("error", {message: "A server error occured."});
-});
 
 app.get("/", async (req, res, next) => {
     try {
@@ -46,6 +43,10 @@ app.get("/", async (req, res, next) => {
     } catch (error) {
         next(error);
     }
+});
+
+app.use((error, req, res, next) => {
+    res.status(500).render("error", {message: "A server error occured."});
 });
 
 app.listen(3000, () => {
