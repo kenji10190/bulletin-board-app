@@ -1,6 +1,7 @@
 const express = require("express");
 const session = require("express-session");
 const flash = require("connect-flash");
+const bcrypt = require("bcryptjs");
 const path = require("path");
 const { PrismaClient } = require("@prisma/client");
 const { body, validationResult } = require("express-validator");
@@ -75,6 +76,32 @@ app.post("/posts", [
 app.get("/register", (request, response, next) => {
   response.render("register");
 });
+
+app.post("/register", [
+  body("name").trim().notEmpty().withMessage("名前は必須です。"),
+  body("email").isEmail().withMessage("有効なメールアドレスを入力してください。"),
+  body("password").isLength({min:6}).withMessage("パスワードは6文字以上です。")
+], async (request, response, next) => {
+  const errors = validationResult(request);
+  if(!errors.isEmpty()){
+    request.flash(errors.arrays().map(e => e.msg).join(", "));
+    return response.redirect("/register");
+  }
+  try {
+    const hashed = await bcrypt.hash(request.body.password, 12);
+    await prisma.user.create(
+      data: {
+        name: request.body.name,
+        email: request.body.email,
+        password: hashed
+      } 
+    );
+    request.flash("登録が完了しました。");
+    response.redirect("/login");
+  } catch (error) {
+    next(error);
+  }
+})
 
 app.use((request, response) => {
     response.status(404).render("error", {message: "ページがありません。"})
