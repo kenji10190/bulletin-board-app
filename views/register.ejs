@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head><link rel="stylesheet" href="/styles.css"></head>
+<body>
+  <% if (flash.error) { %>
+    <p class="text-red-500"><%= flash.error %></p>
+  <% } %>
+  <form action="/register" method="post" class="space-y-4">
+    <div>
+      <label>名前</label>
+      <input name="name" class="border p-2 rounded" />
+    </div>
+    <div>
+      <label>メール</label>
+      <input name="email" type="email" class="border p-2 rounded" />
+    </div>
+    <div>
+      <label>パスワード</label>
+      <input name="password" type="password" class="border p-2 rounded" />
+    </div>
+    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">登録</button>
+  </form>
+</body>
+</html>
+

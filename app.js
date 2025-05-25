@@ -103,6 +103,26 @@ app.post("/register", [
   }
 })
 
+app.get("/login", (request, response, next) => {
+  response.render("login");
+})
+
+app.post("/login", [
+  body("email").isEmail().withMessage("有効なメールアドレスを入力してください。"),
+  body("password").notEmpty().withMessage("パスワードを入力してください。")
+], async (request, response, next) => {
+  const errors = validationResult(request);
+  if (!errors.isEmpty()){
+    request.flash(errors.arrays().map(e => e.msg).join(", "));
+    response.redirect("/login");
+  }
+  try {
+
+  }
+}
+
+);
+
 app.use((request, response) => {
     response.status(404).render("error", {message: "ページがありません。"})
 })
