@@ -13,7 +13,7 @@ app.use(express.urlencoded({extended: true}));
 app.use(session({
     secret: "secret-key",
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
     cookie: {maxAge: 1000 * 60 * 60} // 1時間
 }));
 app.use(flash());
@@ -84,18 +84,18 @@ app.post("/register", [
 ], async (request, response, next) => {
   const errors = validationResult(request);
   if(!errors.isEmpty()){
-    request.flash(errors.arrays().map(e => e.msg).join(", "));
+    request.flash(errors.array().map(e => e.msg).join(", "));
     return response.redirect("/register");
   }
   try {
     const hashed = await bcrypt.hash(request.body.password, 12);
-    await prisma.user.create(
+    await prisma.user.create({
       data: {
         name: request.body.name,
         email: request.body.email,
         password: hashed
-      } 
-    );
+      }
+    });
     request.flash("登録が完了しました。");
     response.redirect("/login");
   } catch (error) {
@@ -113,11 +113,25 @@ app.post("/login", [
 ], async (request, response, next) => {
   const errors = validationResult(request);
   if (!errors.isEmpty()){
-    request.flash(errors.arrays().map(e => e.msg).join(", "));
+    request.flash(errors.array().map(e => e.msg).join(", "));
     response.redirect("/login");
   }
   try {
-
+    const user = await prisma.user.findUnique({where : {email : request.body.email}});
+    if (!user){
+      request.flash("error", "ユーザーが見つかりません。");
+      return response.redirect("/login");
+    }
+    const ok = await bcrypt.compare(request.body.password, user.password);
+    if (!ok){
+      request.flash("error", "パスワードが違います。");
+      return response.redirect("/login");
+    }
+    request.session.userId = user.id;
+    request.flash("ログインに成功しました。");
+    response.redirect("/");
+  } catch (error){
+    next(error);
   }
 }
 
@@ -130,3 +144,7 @@ app.use((request, response) => {
 app.use((error, request, response, next) => {
     response.status(500).render("error", {message: "サーバーでエラーが発生しました。"});
 });
+
+app.listen(3000, () => {
+  console.log("start server");
+} ) 
