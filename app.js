@@ -27,11 +27,25 @@ app.use((request, response, next) => {
 });
 
 app.use(express.static(path.join(__dirname, "public")));
-
+app.use((request, response, next) => {
+  response.locals.currentUser = request.session.userId || null;
+  response.locals.flash = {
+    success : request.flash("success"),
+    error : request.flash("error")
+  }
+  next();
+});
 
 app.set("views", path.join(__dirname, "views"))
 app.set("view engine", "ejs");
 
+function ensureAuth(request, response, next){
+  if (!request.session.userId){
+    request.flash("error", "ログインが必要です。");
+    response.redirect("/login");
+  }
+  next();
+};
 
 app.get("/", async (request, response, next) => {
     try {
@@ -48,7 +62,7 @@ app.get("/", async (request, response, next) => {
     }
 });
 
-app.post("/posts", [
+app.post("/posts", ensureAuth, [
     body("title").trim().isLength({min:1}).withMessage("タイトルは必須です。"),
     body("content").trim().isLength({min:1}).withMessage("内容は必須です。")
 ], async (request, response, next) => {
@@ -133,9 +147,14 @@ app.post("/login", [
   } catch (error){
     next(error);
   }
-}
+});
 
-);
+app.get("/logout", (request, response, next) => {
+  request.session.destroy((err) => {
+    if (err) return next(err);
+    response.redirect("/login");
+  })
+})
 
 app.use((request, response) => {
     response.status(404).render("error", {message: "ページがありません。"})
