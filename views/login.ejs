@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>ログイン</title>
+  <link href="/styles.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+  <div class="bg-white p-8 rounded shadow w-full max-w-md">
+    <h1 class="text-2xl font-bold mb-6 text-center">ログイン</h1>
+
+    <% if (flash && flash.error) { %>
+      <div class="bg-red-100 text-red-700 p-3 rounded mb-4 text-center">
+        <%= flash.error %>
+      </div>
+    <% } %>
+
+    <form action="/login" method="post" class="space-y-4">
+      <div>
+        <label class="block mb-1 text-gray-700" for="email">メールアドレス</label>
+        <input
+          id="email"
+          name="email"
+          type="email"
+          required
+          class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          placeholder="your@email.com"
+        />
+      </div>
+      <div>
+        <label class="block mb-1 text-gray-700" for="password">パスワード</label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+          required
+          class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          placeholder="********"
+        />
+      </div>
+      <button
+        type="submit"
+        class="w-full bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
+      >
+        ログイン
+      </button>
+    </form>
+
+    <div class="mt-6 text-center">
+      <a href="/register" class="text-blue-500 hover:underline">アカウント作成はこちら</a>
+    </div>
+  </div>
+</body>
+</html>
+
