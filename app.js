@@ -42,7 +42,7 @@ app.set("view engine", "ejs");
 function ensureAuth(request, response, next){
   if (!request.session.userId){
     request.flash("error", "ログインが必要です。");
-    response.redirect("/login");
+    return response.redirect("/login");
   }
   next();
 };
@@ -69,7 +69,7 @@ app.post("/posts", ensureAuth, [
     const errors = validationResult(request);
 
     if (!errors.isEmpty()){
-        req.flash("error", errors.array().map(e => e.msg).join(", "));
+        request.flash("error", errors.array().map(e => e.msg).join(", "));
         return response.redirect("/");
     }
     try {
@@ -77,7 +77,7 @@ app.post("/posts", ensureAuth, [
             data: {
                 title: request.body.title,
                 content: request.body.content,
-                authorId: 1
+                authorId: request.session.userId 
             }
         });
         request.flash("success", "投稿が完了しました。");
@@ -98,7 +98,7 @@ app.post("/register", [
 ], async (request, response, next) => {
   const errors = validationResult(request);
   if(!errors.isEmpty()){
-    request.flash(errors.array().map(e => e.msg).join(", "));
+    request.flash("error", errors.array().map(e => e.msg).join(", "));
     return response.redirect("/register");
   }
   try {
@@ -127,7 +127,7 @@ app.post("/login", [
 ], async (request, response, next) => {
   const errors = validationResult(request);
   if (!errors.isEmpty()){
-    request.flash(errors.array().map(e => e.msg).join(", "));
+    request.flash("error", errors.array().map(e => e.msg).join(", "));
     response.redirect("/login");
   }
   try {
