@@ -3,6 +3,7 @@ const session = require("express-session");
 const flash = require("connect-flash");
 const bcrypt = require("bcryptjs");
 const path = require("path");
+require("dotenv").config();
 const { PrismaClient } = require("@prisma/client");
 const { body, validationResult } = require("express-validator");
 
@@ -11,7 +12,7 @@ const prisma = new PrismaClient();
 
 app.use(express.urlencoded({extended: true}));
 app.use(session({
-    secret: "secret-key",
+    secret: process.env.SECRET,
     resave: false,
     saveUninitialized: false,
     cookie: {maxAge: 1000 * 60 * 60} // 1時間
@@ -50,7 +51,8 @@ function ensureAuth(request, response, next){
 app.get("/", async (request, response, next) => {
     try {
         const posts = await prisma.post.findMany({
-            orderBy: {createdAt: "desc"}
+            orderBy: {createdAt: "desc"},
+            include: {author: true}
         });
         response.render("index", {
             posts,
