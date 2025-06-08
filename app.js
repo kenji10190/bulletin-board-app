@@ -112,7 +112,7 @@ app.post("/register", [
         password: hashed
       }
     });
-    request.flash("登録が完了しました。");
+    request.flash("success", "登録が完了しました。");
     response.redirect("/login");
   } catch (error) {
     next(error);
@@ -144,7 +144,7 @@ app.post("/login", [
       return response.redirect("/login");
     }
     request.session.userId = user.id;
-    request.flash("ログインに成功しました。");
+    request.flash("success", "ログインに成功しました。");
     response.redirect("/");
   } catch (error){
     next(error);
