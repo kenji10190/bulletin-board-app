@@ -49,13 +49,21 @@ function ensureAuth(request, response, next){
 };
 
 app.get("/", async (request, response, next) => {
+    const page_size = 5;
     try {
+        const page = parseInt(request.query.page, 10) || 1;
+        const total_post = await prisma.post.count();
+        const total_page = Math.ceil(total_post / page_size);
         const posts = await prisma.post.findMany({
+            skip: (page - 1) * page_size,
+            take: page_size,
             orderBy: {createdAt: "desc"},
             include: {author: true}
         });
         response.render("index", {
             posts,
+            page,
+            total_page,
             success: request.flash("success"),
             error: request.flash("error")
         })
