@@ -71,6 +71,15 @@
         </li>
       <% }) %>
     </ul>
+    <div class="flex justify-center mt-4 space-x-2">
+      <% for(let i = 1; i <= totalPages; i++){ %>
+        <% if(i === page){ %>
+          <span class="px-3 py-1 bg-blue-500 text-white rounded"><%= i %></span>
+        <% } else { %>
+        <a href="/?page=<%= i %>" class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"><%= i %></a> 
+        <% } %>
+      <% } %>
+    </div>
   </div>
 </body>
 </html>

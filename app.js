@@ -53,7 +53,7 @@ app.get("/", async (request, response, next) => {
     try {
         const page = parseInt(request.query.page, 10) || 1;
         const total_post = await prisma.post.count();
-        const total_page = Math.ceil(total_post / page_size);
+        const totalPages = Math.ceil(total_post / page_size);
         const posts = await prisma.post.findMany({
             skip: (page - 1) * page_size,
             take: page_size,
@@ -63,7 +63,7 @@ app.get("/", async (request, response, next) => {
         response.render("index", {
             posts,
             page,
-            total_page,
+            totalPages,
             success: request.flash("success"),
             error: request.flash("error")
         })
