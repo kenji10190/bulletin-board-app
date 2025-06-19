@@ -166,6 +166,25 @@ app.get("/logout", (request, response, next) => {
   })
 })
 
+app.post("/posts/:id/delete", async (request, response, next) => {
+  try {
+    const post = await prisma.post.findUnique(
+      { where : {id : Number(request.params.id)}}
+    );
+    if (!post || post.authorId !== request.session.userId){
+      request.flash("error", "削除できません。");
+      return reponse.redirect("/");
+    }
+    await prisma.post.delete({
+      where : { id : Number(request.params.id)}
+    });
+    request.flash("success", "削除しました。");
+    return response.redirect("/");
+  } catch (error) {
+    next(error);
+  }
+});
+
 app.use((request, response) => {
     response.status(404).render("error", {message: "ページがありません。"})
 })
