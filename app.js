@@ -185,6 +185,31 @@ app.post("/posts/:id/delete", async (request, response, next) => {
   }
 });
 
+app.get("/posts/:id/edit", async (request, response, next) => {
+  try {
+    const post = await prisma.post.findUnique({
+      where: { id: Number(request.params.id)}
+    });
+    if(!post || post.authorId !== request.session.userId){
+      request.flash("error", "編集ができません。");
+      return response.redirect("/");
+    }
+    return reponse.render("/edit", {post});
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.post("/posts/:id/edit", async(request, response, next) => {
+  try {
+    const post = await prisma.post.findUnique({
+      where: { id: Number(request.params.id)}
+    });
+  } catch (error) {
+    
+  }
+});
+
 app.use((request, response) => {
     response.status(404).render("error", {message: "ページがありません。"})
 })
