@@ -194,7 +194,8 @@ app.get("/posts/:id/edit", async (request, response, next) => {
       request.flash("error", "編集ができません。");
       return response.redirect("/");
     }
-    return reponse.render("/edit", {post});
+    console.log("edit");
+    return reponse.render("edit", {post});
   } catch (error) {
     next(error);
   }
@@ -205,8 +206,21 @@ app.post("/posts/:id/edit", async(request, response, next) => {
     const post = await prisma.post.findUnique({
       where: { id: Number(request.params.id)}
     });
+    if (!post || post.authorId !== request.session.userId) {
+      request.flash("error", "編集ができません。");
+      return response.redirect("/");
+    }
+    await prisma.post.update({
+      where: { id: Number(request.params.id)},
+      data : {
+        title: request.body.title,
+        content: request.body.content
+      }
+    });
+    request.flash("success", "編集しました。");
+    response.redirect("/");
   } catch (error) {
-    
+    next(error);
   }
 });
 

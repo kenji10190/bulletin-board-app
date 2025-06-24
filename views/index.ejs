@@ -69,6 +69,7 @@
           <small class="text-gray-500"><%= post.author.name %></small>
           <small class="text-gray-500"><%= post.createdAt.toLocaleString() %></small>
           <% if (currentUser && post.authorId === currentUser){ %>
+          <a href="/posts/<%=post.id%>/edit" class="bg-yellow-400 text-white px-2 py-1 rounded">編集</a>
           <form method="POST" action="/posts/<%= post.id %>/delete" style="display: inline;">
             <button type="submit" class="bg-red-500 text-white px-2 py-1 rounded">削除</button>
           </form>    
