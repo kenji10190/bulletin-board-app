@@ -194,8 +194,7 @@ app.get("/posts/:id/edit", async (request, response, next) => {
       request.flash("error", "編集ができません。");
       return response.redirect("/");
     }
-    console.log("edit");
-    return reponse.render("edit", {post});
+    return response.render("edit", {post});
   } catch (error) {
     next(error);
   }
