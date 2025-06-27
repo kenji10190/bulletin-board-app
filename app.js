@@ -19,14 +19,6 @@ app.use(session({
 }));
 app.use(flash());
 
-app.use((request, response, next) => {
-    response.locals.flash = {
-        success: request.flash("success"),
-        error: request.flash("error")
-    };
-    next();
-});
-
 app.use(express.static(path.join(__dirname, "public")));
 app.use((request, response, next) => {
   response.locals.currentUser = request.session.userId || null;
