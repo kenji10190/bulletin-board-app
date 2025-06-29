@@ -55,9 +55,7 @@ app.get("/", async (request, response, next) => {
         response.render("index", {
             posts,
             page,
-            totalPages,
-            success: request.flash("success"),
-            error: request.flash("error")
+            totalPages
         })
     } catch (error) {
         next(error);
@@ -130,7 +128,7 @@ app.post("/login", [
   const errors = validationResult(request);
   if (!errors.isEmpty()){
     request.flash("error", errors.array().map(e => e.msg).join(", "));
-    response.redirect("/login");
+    return response.redirect("/login");
   }
   try {
     const user = await prisma.user.findUnique({where : {email : request.body.email}});
@@ -165,7 +163,7 @@ app.post("/posts/:id/delete", async (request, response, next) => {
     );
     if (!post || post.authorId !== request.session.userId){
       request.flash("error", "削除できません。");
-      return reponse.redirect("/");
+      return response.redirect("/");
     }
     await prisma.post.delete({
       where : { id : Number(request.params.id)}
