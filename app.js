@@ -81,7 +81,7 @@ app.post("/posts", ensureAuth, [
             }
         });
         request.flash("success", "投稿が完了しました。");
-        response.redirect("/");
+        return response.redirect("/");
     } catch (error) {
         next(error);
     }
@@ -111,7 +111,7 @@ app.post("/register", [
       }
     });
     request.flash("success", "登録が完了しました。");
-    response.redirect("/login");
+    return response.redirect("/login");
   } catch (error) {
     next(error);
   }
@@ -143,7 +143,7 @@ app.post("/login", [
     }
     request.session.userId = user.id;
     request.flash("success", "ログインに成功しました。");
-    response.redirect("/");
+    return response.redirect("/");
   } catch (error){
     next(error);
   }
@@ -152,7 +152,7 @@ app.post("/login", [
 app.get("/logout", (request, response, next) => {
   request.session.destroy((err) => {
     if (err) return next(err);
-    response.redirect("/");
+    return response.redirect("/");
   })
 })
 
@@ -207,7 +207,7 @@ app.post("/posts/:id/edit", async(request, response, next) => {
       }
     });
     request.flash("success", "編集しました。");
-    response.redirect("/");
+    return response.redirect("/");
   } catch (error) {
     next(error);
   }
