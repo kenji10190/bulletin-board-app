@@ -20,16 +20,16 @@
     <% } %>
     </div>
     <!-- Flash Messages -->
-    <template x-if="true">
-      <div x-data="{ show: true }"
-           x-init="setTimeout(() => show = false, 3000)"
-           x-show="show"
-           class="mb-4 p-4 rounded shadow"
-           :class="{'bg-green-100 text-green-800': `<%= flash.success %>`, 'bg-red-100 text-red-800': `<%= flash.error %>`}">
-        <p x-text="`<%= flash.success ? flash.success : flash.error %>`"></p>
+      <div x-data="{ show: true, success: <%= JSON.stringify(flash.success[0] || "") %>, error: <%= JSON.stringify(flash.error[0] || "") %>}">
+        <template x-if="success || error ">
+          <div x-init="setTimeout(() => show = false, 3000)"
+            x-show="show"
+            class="mb-4 p-4 rounded shadow"
+            :class="{'bg-green-100 text-green-800': success , 'bg-red-100 text-red-800': error}">
+            <p x-text="success ? success : error"></p>
+          </div>
+        </template>
       </div>
-    </template>
-
     <!-- 投稿フォーム -->
       <% if(currentUser){ %>
       <form action="/posts" method="post" class="mb-8 space-y-4 bg-white p-6 rounded shadow">
