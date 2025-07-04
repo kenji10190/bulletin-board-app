@@ -15,6 +15,7 @@
         <label for="content">内容</label>
         <textarea name="content" class="border w-full" required><%= post.content %></textarea>
       </div>
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
       <button type="submit" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded">更新</button>
     </form>
 </body>

@@ -2,6 +2,7 @@ const express = require("express");
 const session = require("express-session");
 const flash = require("connect-flash");
 const bcrypt = require("bcryptjs");
+const csurf = require("csurf");
 const path = require("path");
 require("dotenv").config();
 const { PrismaClient } = require("@prisma/client");
@@ -18,6 +19,7 @@ app.use(session({
     cookie: {maxAge: 1000 * 60 * 60} // 1時間
 }));
 app.use(flash());
+app.use(csurf());
 
 app.use(express.static(path.join(__dirname, "public")));
 app.use((request, response, next) => {
@@ -55,7 +57,8 @@ app.get("/", async (request, response, next) => {
         response.render("index", {
             posts,
             page,
-            totalPages
+            totalPages,
+            {csrfToken: request.csrfToken()}
         })
     } catch (error) {
         next(error);
@@ -88,7 +91,7 @@ app.post("/posts", ensureAuth, [
 });
 
 app.get("/register", (request, response, next) => {
-  response.render("register");
+  response.render("register", {csrfToken: request.csrfToken()});
 });
 
 app.post("/register", [
@@ -118,7 +121,7 @@ app.post("/register", [
 })
 
 app.get("/login", (request, response, next) => {
-  response.render("login");
+  response.render("login", {csrfToken: request.csrfToken()});
 })
 
 app.post("/login", [
@@ -184,7 +187,7 @@ app.get("/posts/:id/edit", async (request, response, next) => {
       request.flash("error", "編集ができません。");
       return response.redirect("/");
     }
-    return response.render("edit", {post});
+    return response.render("edit", {post, {csrfToken: request.csrfToken()}});
   } catch (error) {
     next(error);
   }
