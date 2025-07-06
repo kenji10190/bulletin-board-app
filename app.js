@@ -152,7 +152,7 @@ app.post("/login", [
   }
 });
 
-app.get("/logout", (request, response, next) => {
+app.post("/logout", (request, response, next) => {
   request.session.destroy((err) => {
     if (err) return next(err);
     return response.redirect("/");
