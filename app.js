@@ -58,7 +58,7 @@ app.get("/", async (request, response, next) => {
             posts,
             page,
             totalPages,
-            {csrfToken: request.csrfToken()}
+            csrfToken: request.csrfToken()
         })
     } catch (error) {
         next(error);
@@ -101,7 +101,7 @@ app.post("/register", [
 ], async (request, response, next) => {
   const errors = validationResult(request);
   if(!errors.isEmpty()){
-    request.flash("error", errors.array().map(e => e.msg).join(", "));
+    request.flash("error", errors.array().map(e => e.msg).join(" "));
     return response.redirect("/register");
   }
   try {
@@ -187,7 +187,7 @@ app.get("/posts/:id/edit", async (request, response, next) => {
       request.flash("error", "編集ができません。");
       return response.redirect("/");
     }
-    return response.render("edit", {post, {csrfToken: request.csrfToken()}});
+    return response.render("edit", {post, csrfToken: request.csrfToken()});
   } catch (error) {
     next(error);
   }
