@@ -226,4 +226,6 @@ app.use((error, request, response, next) => {
 
 app.listen(3000, () => {
   console.log("start server");
-} ) 
+} );
+
+module.exports = app;
