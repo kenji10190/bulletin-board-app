@@ -1,15 +1,22 @@
 const request = require("supertest");
+const { express } = require("chai");
 const app = require("../app.js");
-const { expect }= require("chai");
 
-describe("認証APIテスト", () => {
-  it("ログイン画面が表示される", (done) => {
+const testUser = {
+  name: "testuser",
+  email: `testuser${Date.now()@example.com}`,
+  password: "password1234"
+}
+
+describe("ユーザー登録APIテスト", () => {
+  it("正しい情報で登録できるか", (done) => {
     request(app)
-      .get("/login")
-      .expect(200)
+      .post("/register")
+      .send(testUser)
+      .expect(302)
       .end((err, response) => {
-        expect(response.text).to.include("ログイン");
-        done(err)
-      });
-  }); 
-});
+        if(err) return done(err);
+        
+      })
+  })
+})
