@@ -28,7 +28,9 @@
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {
+    "@types/chai": "^5.2.2",
     "@types/express-validator": "^2.20.33",
+    "@types/supertest": "^6.0.3",
     "autoprefixer": "^10.4.21",
     "chai": "^5.2.1",
     "mocha": "^11.7.1",

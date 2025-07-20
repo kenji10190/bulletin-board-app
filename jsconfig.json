@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "es2015",
+    "module": "commonjs",
+    "allowJs": true,
+    "checkJs": true,
+    "typeRoots": ["./node_modules/@types"],
+    "types": ["mocha", "node", "supertest", "chai"]
+  },
+  "include": [
+    "**/*.js",
+    "**/*.spec.js",
+    "**/*.test.js"
+  ]
+}
