@@ -4,7 +4,7 @@ const app = require("../app.js");
 
 const testUser = {
   name: "testUser",
-  email: `testuser${Date.now()}@mail.com`,
+  email: `testuser${Date.now()}@mail.com`, 
   password: "password1234"
 }
 
@@ -23,12 +23,13 @@ describe("ユーザー登録APIテスト", () => {
       .expect(200);
 
     const csrfMatch = getResponse.text.match(/<input type="hidden" name="_csrf" value="([^"]+)"/);
-    csrfToken = csrfMatch ? csrfMatch[0] : null;
+    csrfToken = csrfMatch ? csrfMatch[1] : null;
 
     if (!csrfToken) throw new Error("csrfTokenが見つかりません。");
 
     const postResponse = await agent
       .post("/register")
+      .type("form")
       .send({
         ...testUser,
         _csrf: csrfToken
