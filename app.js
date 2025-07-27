@@ -1,15 +1,11 @@
 const express = require("express");
 const session = require("express-session");
 const flash = require("connect-flash");
-const bcrypt = require("bcryptjs");
 const csurf = require("csurf");
 const path = require("path");
 require("dotenv").config();
-const { PrismaClient } = require("@prisma/client");
-const { body, validationResult } = require("express-validator");
-
+const routes = require("./routes");
 const app = express();
-const prisma = new PrismaClient();
 
 app.use(express.urlencoded({extended: true}));
 app.use(session({
@@ -20,6 +16,7 @@ app.use(session({
 }));
 app.use(flash());
 app.use(csurf());
+app.use("/", routes);
 
 app.use(express.static(path.join(__dirname, "public")));
 app.use((request, response, next) => {
@@ -34,188 +31,6 @@ app.use((request, response, next) => {
 app.set("views", path.join(__dirname, "views"))
 app.set("view engine", "ejs");
 
-function ensureAuth(request, response, next){
-  if (!request.session.userId){
-    request.flash("error", "ログインが必要です。");
-    return response.redirect("/login");
-  }
-  next();
-};
-
-app.get("/", async (request, response, next) => {
-    const page_size = 5;
-    try {
-        const page = parseInt(request.query.page, 10) || 1;
-        const total_post = await prisma.post.count();
-        const totalPages = Math.ceil(total_post / page_size);
-        const posts = await prisma.post.findMany({
-            skip: (page - 1) * page_size,
-            take: page_size,
-            orderBy: {createdAt: "desc"},
-            include: {author: true}
-        });
-        response.render("index", {
-            posts,
-            page,
-            totalPages,
-            csrfToken: request.csrfToken()
-        })
-    } catch (error) {
-        next(error);
-    }
-});
-
-app.post("/posts", ensureAuth, [
-    body("title").trim().isLength({min:1}).withMessage("タイトルは必須です。"),
-    body("content").trim().isLength({min:1}).withMessage("内容は必須です。")
-], async (request, response, next) => {
-    const errors = validationResult(request);
-
-    if (!errors.isEmpty()){
-        request.flash("error", errors.array().map(e => e.msg).join(", "));
-        return response.redirect("/");
-    }
-    try {
-        await prisma.post.create({
-            data: {
-                title: request.body.title,
-                content: request.body.content,
-                authorId: request.session.userId 
-            }
-        });
-        request.flash("success", "投稿が完了しました。");
-        return response.redirect("/");
-    } catch (error) {
-        next(error);
-    }
-});
-
-app.get("/register", (request, response, next) => {
-  response.render("register", {csrfToken: request.csrfToken()});
-});
-
-app.post("/register", [
-  body("name").trim().notEmpty().withMessage("名前は必須です。"),
-  body("email").isEmail().withMessage("有効なメールアドレスを入力してください。"),
-  body("password").isLength({min:6}).withMessage("パスワードは6文字以上です。")
-], async (request, response, next) => {
-  const errors = validationResult(request);
-  if(!errors.isEmpty()){
-    request.flash("error", errors.array().map(e => e.msg).join(" "));
-    return response.redirect("/register");
-  }
-  try {
-    const hashed = await bcrypt.hash(request.body.password, 12);
-    await prisma.user.create({
-      data: {
-        name: request.body.name,
-        email: request.body.email,
-        password: hashed
-      }
-    });
-    request.flash("success", "登録が完了しました。");
-    return response.redirect("/login");
-  } catch (error) {
-    next(error);
-  }
-})
-
-app.get("/login", (request, response, next) => {
-  response.render("login", {csrfToken: request.csrfToken()});
-})
-
-app.post("/login", [
-  body("email").isEmail().withMessage("有効なメールアドレスを入力してください。"),
-  body("password").notEmpty().withMessage("パスワードを入力してください。")
-], async (request, response, next) => {
-  const errors = validationResult(request);
-  if (!errors.isEmpty()){
-    request.flash("error", errors.array().map(e => e.msg).join(", "));
-    return response.redirect("/login");
-  }
-  try {
-    const user = await prisma.user.findUnique({where : {email : request.body.email}});
-    if (!user){
-      request.flash("error", "ユーザーが見つかりません。");
-      return response.redirect("/login");
-    }
-    const ok = await bcrypt.compare(request.body.password, user.password);
-    if (!ok){
-      request.flash("error", "パスワードが違います。");
-      return response.redirect("/login");
-    }
-    request.session.userId = user.id;
-    request.flash("success", "ログインに成功しました。");
-    return response.redirect("/");
-  } catch (error){
-    next(error);
-  }
-});
-
-app.post("/logout", (request, response, next) => {
-  request.session.destroy((err) => {
-    if (err) return next(err);
-    return response.redirect("/");
-  })
-})
-
-app.post("/posts/:id/delete", async (request, response, next) => {
-  try {
-    const post = await prisma.post.findUnique(
-      { where : {id : Number(request.params.id)}}
-    );
-    if (!post || post.authorId !== request.session.userId){
-      request.flash("error", "削除できません。");
-      return response.redirect("/");
-    }
-    await prisma.post.delete({
-      where : { id : Number(request.params.id)}
-    });
-    request.flash("success", "削除しました。");
-    return response.redirect("/");
-  } catch (error) {
-    next(error);
-  }
-});
-
-app.get("/posts/:id/edit", async (request, response, next) => {
-  try {
-    const post = await prisma.post.findUnique({
-      where: { id: Number(request.params.id)}
-    });
-    if(!post || post.authorId !== request.session.userId){
-      request.flash("error", "編集ができません。");
-      return response.redirect("/");
-    }
-    return response.render("edit", {post, csrfToken: request.csrfToken()});
-  } catch (error) {
-    next(error);
-  }
-});
-
-app.post("/posts/:id/edit", async(request, response, next) => {
-  try {
-    const post = await prisma.post.findUnique({
-      where: { id: Number(request.params.id)}
-    });
-    if (!post || post.authorId !== request.session.userId) {
-      request.flash("error", "編集ができません。");
-      return response.redirect("/");
-    }
-    await prisma.post.update({
-      where: { id: Number(request.params.id)},
-      data : {
-        title: request.body.title,
-        content: request.body.content
-      }
-    });
-    request.flash("success", "編集しました。");
-    return response.redirect("/");
-  } catch (error) {
-    next(error);
-  }
-});
-
 app.use((request, response) => {
     response.status(404).render("error", {message: "ページがありません。"})
 })
@@ -223,6 +38,5 @@ app.use((request, response) => {
 app.use((error, request, response, next) => {
     response.status(500).render("error", {message: "サーバーでエラーが発生しました。"});
 });
-
 
 module.exports = app;

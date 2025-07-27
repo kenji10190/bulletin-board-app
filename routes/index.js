@@ -29,3 +29,17 @@ const postValidation = [
 ];
 
 router.get("/", postController);
+
+router.get("/register", authController.showRegister);
+router.post("/register", registerValidation, authController.register);
+router.get("/login", authController.showLogin);
+router.post("/login", loginValidation, authController.login);
+router.post("/logout", authController.logout);
+
+router.post("/posts", ensureAuth, postValidation, postConstroller.create);
+router.get("/posts/:id/edit", ensureAuth, postConstroller.showEdit);
+router.post("/posts/:id/edit", ensureAuth, postConstroller.update);
+router.post("/posts/:id/delete", ensureAuth, postConstroller.delete);
+
+module.exports = router;
+
