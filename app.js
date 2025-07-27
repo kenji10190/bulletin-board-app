@@ -224,8 +224,5 @@ app.use((error, request, response, next) => {
     response.status(500).render("error", {message: "サーバーでエラーが発生しました。"});
 });
 
-app.listen(3000, () => {
-  console.log("start server");
-} );
 
 module.exports = app;

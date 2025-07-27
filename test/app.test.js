@@ -8,13 +8,40 @@ const testUser = {
   password: "password1234"
 }
 
-describe("ユーザー登録APIテスト", () => {
+describe("掲示板アプリ基本テスト", () => {
 
   let agent;
-  let csrfToken;
 
   beforeEach(async () => {
     agent = request.agent(app);
+  });
+
+  describe("起動確認", () => {
+    it("アプリが起動するか", async () => {
+      const getResponse = await agent
+        .get("/")
+        .expect(getResponse.status).to.equal(200);
+    })
+  })
+
+  describe("主要ページ表示確認", () => {
+    it("トップページ表示確認", async () => {
+      const getResponse = await agent
+        .get("/")
+        .expect(getResponse.status).to.equal(200);
+    });
+
+    it("ログインページ確認", async () => {
+      const getResponse = await agent
+        .get("/login")
+        .expect(getResponse.status).to.equal(200);
+    });
+
+    it("ユーザー登録ページ確認", async () => {
+      const getResponse = await agent
+        .get("/register")
+        .expect(getResponse.status).to.equal(200);
+    });
   });
 
   it("正しい情報で登録可能か", async () => {
@@ -36,6 +63,7 @@ describe("ユーザー登録APIテスト", () => {
       })
       .expect(302);
 
-    expect(postResponse.headers.location).to.exist;
+    expect(postResponse.status).to.equal(302);
+    expect(postResponse.headers.location).to.equal("/login");
   })
 })
