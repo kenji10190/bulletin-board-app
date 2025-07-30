@@ -8,6 +8,8 @@ const routes = require("./routes");
 const app = express();
 
 app.use(express.urlencoded({extended: true}));
+app.use(express.static(path.join(__dirname, "public")));
+
 app.use(session({
     secret: process.env.SECRET,
     resave: false,
@@ -16,9 +18,10 @@ app.use(session({
 }));
 app.use(flash());
 app.use(csurf());
-app.use("/", routes);
 
-app.use(express.static(path.join(__dirname, "public")));
+app.set("views", path.join(__dirname, "views"))
+app.set("view engine", "ejs");
+
 app.use((request, response, next) => {
   response.locals.currentUser = request.session.userId || null;
   response.locals.flash = {
@@ -28,8 +31,7 @@ app.use((request, response, next) => {
   next();
 });
 
-app.set("views", path.join(__dirname, "views"))
-app.set("view engine", "ejs");
+app.use("/", routes);
 
 app.use((request, response) => {
     response.status(404).render("error", {message: "ページがありません。"})

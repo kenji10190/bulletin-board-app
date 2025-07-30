@@ -2,10 +2,10 @@ const express = require("express");
 const router = express.Router();
 const { body } = require("express-validator");
 const authController = require("../controllers/authController.js");
-const postController = require("../controllers/postConstroller.js");
+const postController = require("../controllers/postController.js");
 
 function ensureAuth(request, response, next) {
-  if (!request.session.id) {
+  if (!request.session.userId) {
     request.flash("error", "ログインしてください。");
     return response.redirect("/login");
   }
@@ -28,7 +28,7 @@ const postValidation = [
   body("content").trim().isLength({min:1}).withMessage("内容は必須です。")
 ];
 
-router.get("/", postController);
+router.get("/", postController.index);
 
 router.get("/register", authController.showRegister);
 router.post("/register", registerValidation, authController.register);
@@ -36,10 +36,10 @@ router.get("/login", authController.showLogin);
 router.post("/login", loginValidation, authController.login);
 router.post("/logout", authController.logout);
 
-router.post("/posts", ensureAuth, postValidation, postConstroller.create);
-router.get("/posts/:id/edit", ensureAuth, postConstroller.showEdit);
-router.post("/posts/:id/edit", ensureAuth, postConstroller.update);
-router.post("/posts/:id/delete", ensureAuth, postConstroller.delete);
+router.post("/posts", ensureAuth, postValidation, postController.create);
+router.get("/posts/:id/edit", ensureAuth, postController.showEdit);
+router.post("/posts/:id/edit", ensureAuth, postController.update);
+router.post("/posts/:id/delete", ensureAuth, postController.delete);
 
 module.exports = router;
 

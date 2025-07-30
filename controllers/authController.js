@@ -1,11 +1,11 @@
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const { validationResult } = require("express-validator");
-const { prismaClient } = require("@prisma/client");
-const prismaClient = new prismaClient();
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
 
 exports.showRegister = (request, response, next) => {
   response.render("register", {csrfToken: request.csrfToken()});
-});
+};
 
 exports.register = async (request, response, next) => {
   const errors = validationResult(request);
@@ -27,11 +27,11 @@ exports.register = async (request, response, next) => {
   } catch (error) {
     next(error);
   }
-});
+};
 
 exports.showLogin = (request, response, next) => {
   response.render("login", {csrfToken: request.csrfToken()});
-});
+};
 
 exports.login = async (request, response, next) => {
   const errors = validationResult(request);
@@ -56,11 +56,11 @@ exports.login = async (request, response, next) => {
   } catch (error){
     next(error);
   }
-});
+};
 
 exports.logout = (request, response, next) => {
   request.session.destroy((err) => {
     if (err) return next(err);
     return response.redirect("/");
   })
-});
+};
