@@ -44,7 +44,7 @@ describe("掲示板アプリ基本テスト", () => {
       }
       const getResponse = await agent.get("/register").expect(200);
       const csrfMatch = getResponse.text.match(/<input type="hidden" name="_csrf" value="([^"]+)"/);
-      csrfToken = csrfMatch ? csrfMatch[1] : null;
+      const csrfToken = csrfMatch ? csrfMatch[1] : null;
 
       if (!csrfToken) throw new Error("csrfTokenが見つかりません。");
 
@@ -69,7 +69,7 @@ describe("掲示板アプリ基本テスト", () => {
     before(async () => {
       const getResponse = await agent.get("/register");
       const csrfMatch = getResponse.text.match(/<input type="hidden" name="_csrf" value="([^"]+)"/);
-      csrfToken = csrfMatch ? csrfMatch[1] : null;
+      const csrfToken = csrfMatch ? csrfMatch[1] : null;
 
       const postResponse = await agent.post("/register").type("form").send({
         name: "testuser",
@@ -82,7 +82,7 @@ describe("掲示板アプリ基本テスト", () => {
     it("正常ログイン可能か", async () => {
       const loginPage = await agent.get("/login");
       const csrfMatch = loginPage.text.match(/<input type="hidden" name="_csrf" value="([^"]+)"/);
-      csrfToken = csrfMatch ? csrfMatch[1] : null;
+      const csrfToken = csrfMatch ? csrfMatch[1] : null;
 
       const response = await agent.post("/login").type("form").send({
         email: testEmail,
@@ -94,4 +94,42 @@ describe("掲示板アプリ基本テスト", () => {
       expect(response.headers.location).to.equal("/");
     });
   });
+
+  describe("投稿機能基本テスト", () => {
+    beforeEach(async () => {
+      const email = `testUser${Date.now()}@mail.com`;
+      const password = "password1234";
+
+      const getResponse = await agent.get("/register");
+      let csrfMatch = getResponse.text.match(/<input type="hidden" name="_csrf" value="([^"]+)"/);
+
+      const postResponse = await agent.post("/register").type("form").send({
+        name: "testUser",
+        email: email,
+        password: password,
+        _csrf: csrfMatch[1]
+      });
+
+      const loginPage = await agent.get("/login");
+      csrfMatch = loginPage.text.match(/<input type="hidden" name="_csrf" value="([^"]+)"/);
+
+      const loginResponse = await agent.post("/login").type("form").send({
+        email: email,
+        password: password,
+        _csrf: csrfMatch[1]
+      });
+    });
+
+    it("投稿一覧ページが表示されるか", async () => {
+      const response = await agent.get("/");
+      expect(response.status).to.equal(200);
+    })
+  });
 });
+
+describe("エラーハンドリング", () => {
+  it("存在しないページ", async () => {
+    const response = await request(app).get("/sonzaishinaiPage");
+    expect(response.status).to.equal(404);
+  })
+})
