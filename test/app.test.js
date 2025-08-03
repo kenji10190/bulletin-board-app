@@ -35,82 +35,63 @@ describe("掲示板アプリ基本テスト", () => {
     });
   });
 
-describe("ユーザー登録基本テスト", () => {
-  it("正しい情報で登録可能か", async () => {
-    const testUser = {
-      name: "testUser",
-      email: `testuser${Date.now()}@mail.com`, 
-      password: "password1234"
-    }
-    const getResponse = await agent.get("/register").expect(200);
-describe("ログイン（最重要）", () => {
-    const testEmail = `test${Date.now()}@example.com`;
-    const testPassword = "password123";
+  describe("ユーザー登録基本テスト", () => {
+    it("正しい情報で登録可能か", async () => {
+      const testUser = {
+        name: "testUser",
+        email: `testuser${Date.now()}@mail.com`, 
+        password: "password1234"
+      }
+      const getResponse = await agent.get("/register").expect(200);
+      const csrfMatch = getResponse.text.match(/<input type="hidden" name="_csrf" value="([^"]+)"/);
+      csrfToken = csrfMatch ? csrfMatch[1] : null;
 
-    // テスト用ユーザーを事前に登録
-    before(async () => {
-      const registerPage = await agent.get("/register");
-      const csrfMatch = registerPage.text.match(/<input[^>]*name="_csrf"[^>]*value="([^"]+)"/);
-      
-      await agent
+      if (!csrfToken) throw new Error("csrfTokenが見つかりません。");
+
+      const postResponse = await agent
         .post("/register")
         .type("form")
         .send({
-          name: "testuser",
-          email: testEmail,
-          password: testPassword,
-          _csrf: csrfMatch[1]
-        });
-    });
-    const csrfMatch = getResponse.text.match(/<input type="hidden" name="_csrf" value="([^"]+)"/);
-    csrfToken = csrfMatch ? csrfMatch[1] : null;
+          ...testUser,
+          _csrf: csrfToken
+        })
+        .expect(302);
 
-    if (!csrfToken) throw new Error("csrfTokenが見つかりません。");
-
-    const postResponse = await agent
-      .post("/register")
-      .type("form")
-      .send({
-        ...testUser,
-        _csrf: csrfToken
-      })
-      .expect(302);
-
-    expect(postResponse.status).to.equal(302);
-    expect(postResponse.headers.location).to.equal("/login");
-    })
-  })
-});
-
-describe("ログイン基本テスト", () => {
-  const testEmail = `testUser${Date.now()}@mail.com`,
-  const testPassword = "password1234";
-  
-  before(async () => {
-    const getResponse = await agent.get("/register");
-    const csrfMatch = getResponse.text.match(/<input type="hidden" name="_csrf" value="([^"]+)"/);
-    csrfToken = csrfMatch ? csrfMatch[1] : null;
-
-    await agent.post("/register").type("form").send({
-      name: testuser,
-      email: testEmail,
-      password: testPassword,
-      _csrf: csrfToken
+      expect(postResponse.status).to.equal(302);
+      expect(postResponse.headers.location).to.equal("/login");
     });
   });
 
-  it("正常ログイン可能か", async () => {
-    const loginPage = await agent.get("/login");
-    const csrfMatch = getResponse.text.match(/<input type="hidden" name="_csrf" value="([^"]+)"/);
-    csrfToken = csrfMatch ? csrfMatch[1] : null;
+  describe("ログイン基本テスト", () => {
+    const testEmail = `testUser${Date.now()}@mail.com`;
+    const testPassword = "password1234";
 
-    const response = await agent.post("/login").type("form").send({
-      email: testEmail,
-      password: testPassword,
-      _csrf: csrfToken
+    before(async () => {
+      const getResponse = await agent.get("/register");
+      const csrfMatch = getResponse.text.match(/<input type="hidden" name="_csrf" value="([^"]+)"/);
+      csrfToken = csrfMatch ? csrfMatch[1] : null;
+
+      const postResponse = await agent.post("/register").type("form").send({
+        name: "testuser",
+        email: testEmail,
+        password: testPassword,
+        _csrf: csrfToken
+      });
     });
 
-    expect(response.status).to.equal(302);
-    expect(response.headers.location).to.equal("/");
+    it("正常ログイン可能か", async () => {
+      const loginPage = await agent.get("/login");
+      const csrfMatch = loginPage.text.match(/<input type="hidden" name="_csrf" value="([^"]+)"/);
+      csrfToken = csrfMatch ? csrfMatch[1] : null;
+
+      const response = await agent.post("/login").type("form").send({
+        email: testEmail,
+        password: testPassword,
+        _csrf: csrfToken
+      });
+
+      expect(response.status).to.equal(302);
+      expect(response.headers.location).to.equal("/");
+    });
   });
 });
