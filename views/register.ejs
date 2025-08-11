@@ -5,26 +5,31 @@
   <title>新規登録</title>
   <link rel="stylesheet" href="/styles.css">
 </head>
-<body>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
   <% if (flash.error && flash.error.length) { %>
     <p class="text-red-500"><%= flash.error %></p>
   <% } %>
-  <form action="/register" method="post" class="space-y-4">
-    <div>
-      <label>名前</label>
-      <input name="name" class="border p-2 rounded" />
-    </div>
-    <div>
-      <label>メール</label>
-      <input name="email" type="email" class="border p-2 rounded" />
-    </div>
-    <div>
-      <label>パスワード</label>
-      <input name="password" type="password" class="border p-2 rounded" />
-    </div>
+  <div class="bg-white p-5 rounded shadow">
+    <h2 class="text-2xl pb-5">新規会員登録</h2>
+    <form action="/register" method="post" class="space-y-4">
+      <div class="flex justify-between items-center">
+        <label class="mr-2">名前</label>
+        <input name="name" class="border p-2 rounded" />
+      </div>
+      <div class="flex justify-between items-center">
+        <label class="mr-2">メール</label>
+        <input name="email" type="email" class="border p-2 rounded" />
+      </div>
+      <div class="flex justify-between items-center">
+        <label class="mr-2">パスワード</label>
+        <input name="password" type="password" class="border p-2 rounded" />
+      </div>
       <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">登録</button>
-  </form>
+      <div class="flex justify-end">
+        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">登録</button>
+      </div>
+    </form>
+  </div>
 </body>
 </html>
 
