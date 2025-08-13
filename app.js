@@ -2,6 +2,8 @@ const express = require("express");
 const session = require("express-session");
 const flash = require("connect-flash");
 const csurf = require("csurf");
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
 const path = require("path");
 require("dotenv").config();
 const routes = require("./routes");
@@ -14,10 +16,21 @@ app.use(session({
     secret: process.env.SECRET,
     resave: false,
     saveUninitialized: false,
-    cookie: {maxAge: 1000 * 60 * 60} // 1時間
+    cookie: {
+      httpOnly: true,
+      sameSite: "lax",
+      maxAge: 1000 * 60 * 60,
+    } 
 }));
 app.use(flash());
 app.use(csurf());
+app.use(helmet());
+app.use(rateLimit({
+  windowMs: 60 * 100,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false
+}));
 
 app.set("views", path.join(__dirname, "views"))
 app.set("view engine", "ejs");
