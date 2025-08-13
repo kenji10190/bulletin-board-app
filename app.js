@@ -24,7 +24,8 @@ app.use(session({
 }));
 app.use(flash());
 app.use(csurf());
-app.use(helmet());
+// Alpine.jsのCDNリンクを読み込ませるためfalseにしてます。
+app.use(helmet({ contentSecurityPolicy: false }));
 app.use(rateLimit({
   windowMs: 60 * 100,
   max: 100,
