@@ -1,5 +1,7 @@
 ### データベース連携掲示板アプリ
-このアプリはSQLiteデータベースを接続している掲示板アプリです。
+このアプリはNode.js + Express.js + PostgreSQL(Supabase) で構築した掲示板アプリです。  
+Renderというクラウドプラットフォームにアプリをデプロイしています。  
+https://bulletin-board-app-kfw6.onrender.com  
 
 #### 機能一覧
 ##### ユーザー管理機能
@@ -32,7 +34,7 @@
 - Node.js
 - Express.js
 - Prsima (ORM)
-- SQLite (データベース)
+- PostgreSQL (Supabase)
 
 ##### セキュリティ・ミドルウェア
 - bcryptjs
@@ -49,5 +51,7 @@
 - [Install Tailwind CSS using PostCSS - Tailwind CSS](https://v3.tailwindcss.com/docs/installation/using-postcss)
 - [Models | Prisma Documentation](https://www.prisma.io/docs/orm/prisma-schema/data-model/models)
 - [Quickstart with TypeScript & SQLite | Prisma Documentation](https://www.prisma.io/docs/getting-started/quickstart-sqlite)
+- [Connect to your database](https://supabase.com/docs/guides/database/connecting-to-postgres#supavisor-session-mode)
 - [Mocha](https://mochajs.org/)
 - [Chai](https://www.chaijs.com/)
+- [Your First Render Deploy](https://render.com/docs/your-first-deploy)
