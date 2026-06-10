@@ -1,0 +1,12 @@
+name: Supabase Keepalive
+on:
+  schedule:
+    - cron: '0 0 */3 * *'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping health endpoint
+        run: curl -sf https://bulletin-board-app-kfw6.onrender.com 

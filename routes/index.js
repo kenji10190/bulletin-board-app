@@ -29,9 +29,8 @@ const postValidation = [
 ];
 
 router.get("/", postController.index);
+router.get("/health", postController.checkHealth);
 
-router.get("/register", authController.showRegister);
-router.post("/register", registerValidation, authController.register);
 router.get("/login", authController.showLogin);
 router.post("/login", loginValidation, authController.login);
 router.post("/logout", authController.logout);
