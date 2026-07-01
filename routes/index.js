@@ -35,6 +35,9 @@ router.get("/login", authController.showLogin);
 router.post("/login", loginValidation, authController.login);
 router.post("/logout", authController.logout);
 
+router.get("/register", authController.showRegister);
+router.post("/register", registerValidation, authController.register);
+
 router.post("/posts", ensureAuth, postValidation, postController.create);
 router.get("/posts/:id/edit", ensureAuth, postController.showEdit);
 router.post("/posts/:id/edit", ensureAuth, postController.update);
