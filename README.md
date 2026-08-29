@@ -1,7 +1,13 @@
 ### データベース連携掲示板アプリ
 このアプリはNode.js + Express.js + PostgreSQL(Supabase) で構築した掲示板アプリです。  
 Renderというクラウドプラットフォームにアプリをデプロイしています。  
-https://bulletin-board-app-kfw6.onrender.com  
+https://bulletin-board-app-kfw6.onrender.com
+
+### 作成理由
+webサービスを0から作ってみたかったというのが理由になります。
+基本的なルーティング、認証、ページネーション、セキュリティ、
+データベースをどうつなげるのか、どうやってフロントに表示させるのか
+などを理解するために作りました。
 
 #### 機能一覧
 ##### ユーザー管理機能
