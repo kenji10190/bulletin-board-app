@@ -6,7 +6,7 @@
   "scripts": {
     "test": "mocha",
     "dev": "nodemon server.js",
-    "start": "node app.js",
+    "start": "node server.js",
     "styles:build": "tailwindcss -i ./src/styles.css -o ./public/styles.css --minify",
     "styles:watch": "tailwindcss -i ./src/styles.css -o ./public/styles.css --watch"
   },
