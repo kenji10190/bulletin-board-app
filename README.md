@@ -39,7 +39,7 @@ webサービスを0から作ってみたかったというのが理由になり�
 ##### バックエンド
 - Node.js
 - Express.js
-- Prsima (ORM)
+- Prisma (ORM)
 - PostgreSQL (Supabase)
 
 ##### セキュリティ・ミドルウェア
@@ -48,6 +48,11 @@ webサービスを0から作ってみたかったというのが理由になり�
 - express-session
 - express-validator
 - connect-flash
+
+#### 技術選定の理由
+
+各技術の選定理由・移行の経緯（SQLite→PostgreSQL 等）は
+[docs/tech-decision.md](./docs/tech-decision.md) にまとめています。
 
 ### 参考資料
 - Node.js 超入門 第4版 掌田津耶乃
